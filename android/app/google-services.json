@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "561381085606",
+    "project_id": "math-adventure-e52a4",
+    "storage_bucket": "math-adventure-e52a4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:561381085606:android:46feaaf525b6f953a6ff67",
+        "android_client_info": {
+          "package_name": "com.math_adventure"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjP0kPRC8ALz5ikEXfAHTHNwW9PwnIvpU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
