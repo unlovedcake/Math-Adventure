@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:math_adventure/app/modules/addition/controllers/addition_controller.dart';
 import 'package:math_adventure/app/modules/addition/views/addition_view.dart';
-import 'package:math_adventure/app/modules/addition/views/quiz_addition_view.dart';
 import 'package:math_adventure/app/routes/app_pages.dart';
 
-class AdditionView extends GetView<AdditionController> {
-  const AdditionView({super.key});
+import '../controllers/map_level_controller.dart';
+
+class MapLevelView extends GetView<MapLevelController> {
+  const MapLevelView({super.key});
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(AdditionController());
+    final controller = Get.find<MapLevelController>();
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -41,60 +42,44 @@ class AdditionView extends GetView<AdditionController> {
           _ButtonLevel(
             x: 0,
             y: 450,
-            level: 1,
           ),
           _ButtonLevel(
-            x: -35,
+            x: -20,
             y: 380,
-            level: 2,
           ),
           _ButtonLevel(
             x: 45,
             y: 320,
-            level: 3,
           ),
           _ButtonLevel(
             x: 125,
             y: 270,
-            level: 4,
           ),
           _ButtonLevel(
             x: 60,
             y: 220,
-            level: 5,
           ),
           _ButtonLevel(
             x: -40,
             y: 180,
-            level: 6,
           ),
           _ButtonLevel(
             x: 10,
             y: 260,
             w: 300,
             h: 300,
-            level: 7,
           ),
           _ButtonLevel(
             x: 90,
-            y: 240,
+            y: 220,
             w: 250,
             h: 250,
-            level: 8,
           ),
           _ButtonLevel(
-            x: 40,
-            y: 200,
+            x: 90,
+            y: 220,
             w: 250,
             h: 250,
-            level: 9,
-          ),
-          _ButtonLevel(
-            x: -40,
-            y: 190,
-            w: 250,
-            h: 250,
-            level: 10,
           ),
         ],
       ),
@@ -106,7 +91,6 @@ class _ButtonLevel extends StatelessWidget {
   _ButtonLevel({
     required this.x,
     required this.y,
-    required this.level,
     this.w,
     this.h,
   });
@@ -115,42 +99,40 @@ class _ButtonLevel extends StatelessWidget {
   final double y;
   double? w = 1000;
   double? h = 1000;
-  final int level;
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<AdditionController>();
+    final controller = Get.find<MapLevelController>();
+
+    final addController = controller.additionController();
+
+    print('adada ${addController?.level.value}');
 
     return Transform.translate(
       offset: Offset(x, y),
       child: GestureDetector(
         onTap: () {
-          Get.to(
-            () => QuizAdditionView(),
-          );
-          controller.startTimer();
+          Get.to(() => AdditionView(),
+              fullscreenDialog: true, preventDuplicates: false);
         },
-        child: Obx(() => Container(
-              alignment: Alignment.center,
-              width: w,
-              height: h,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                    controller.saveTheSuccessLevel.contains(level)
-                        ? 'assets/images/active_level.png'
-                        : 'assets/images/inactive_level.png',
-                  ),
-                  fit: BoxFit.cover,
-                  // colorFilter: ColorFilter.mode(
-                  //   addController?.level.value == 2
-                  //       ? Colors.yellow
-                  //       : Colors.grey.withOpacity(0.5), // Change color and opacity
-                  //   BlendMode.srcATop, // Apply blending mode
-                  // ),
-                ),
+        child: Container(
+          width: w,
+          height: h,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                'assets/images/active_level.png',
               ),
-            )),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                addController?.level.value == 2
+                    ? Colors.yellow
+                    : Colors.grey.withOpacity(0.5), // Change color and opacity
+                BlendMode.srcATop, // Apply blending mode
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

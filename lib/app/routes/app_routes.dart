@@ -5,10 +5,16 @@ abstract class Routes {
   Routes._();
   static const HOME = _Paths.HOME;
   static const ADDITION = _Paths.ADDITION;
+  static const INSTRUCTION = _Paths.INSTRUCTION;
+  static const SELECT_OPERATION = _Paths.SELECT_OPERATION;
+  static const MAP_LEVEL = _Paths.MAP_LEVEL;
 }
 
 abstract class _Paths {
   _Paths._();
   static const HOME = '/home';
   static const ADDITION = '/addition';
+  static const INSTRUCTION = '/instruction';
+  static const SELECT_OPERATION = '/select-operation';
+  static const MAP_LEVEL = '/map-level';
 }

@@ -8,27 +8,27 @@ import 'package:math_adventure/app/data/model/word_model.dart';
 class AdditionController extends GetxController {
   final int totalLives = 3;
   final int totalEquations = 5;
-  final int totalTime = 180; // 3 minutes (180 seconds)
+  final int totalTime = 180;
 
   final RxInt level = 1.obs;
-  var lives = 3.obs;
-  var score = 0.obs;
-  var revealedLetters = ''.obs;
-  var timeLeft = 180.obs;
-  var currentQuestionIndex = 0.obs;
-  var currentEquation = ''.obs;
-  var correctAnswer = 0.obs;
-  var choices = <int>[].obs;
-  var isGameOver = false.obs;
+  final lives = 3.obs;
+  final score = 0.obs;
+  final revealedLetters = ''.obs;
+  final timeLeft = 180.obs;
+  final currentQuestionIndex = 0.obs;
+  final currentEquation = ''.obs;
+  final correctAnswer = 0.obs;
+  final choices = <int>[].obs;
+  final saveTheSuccessLevel = <int>[].obs;
 
-  var randomNumber = 10.obs;
+  final randomNumber = 10.obs;
 
   final currentWordListIndex = 0.obs;
   final isCorrect = <bool>[].obs;
 
   final availableHint = 1.obs;
 
-  Timer? _timer;
+  Timer? timer;
   List<Map<String, dynamic>> equations = [];
 
   late WordModel currentWord;
@@ -56,15 +56,22 @@ class AdditionController extends GetxController {
 
   @override
   void onInit() {
+    saveTheSuccessLevel.add(level.value);
     _randomTheIndexOfWordList();
 
     _randomHiddenWordIndex(currentWord.word.length);
     _generateEquations();
-    _startTimer();
+
     _loadQuestion();
 
     revealedLetters.value = "-" * currentWord.word.length;
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    timer?.cancel();
+    super.onClose();
   }
 
   void _randomTheIndexOfWordList() {
@@ -99,12 +106,12 @@ class AdditionController extends GetxController {
     return "${minutes.toString().padLeft(1, '0')}:${seconds.toString().padLeft(2, '0')}";
   }
 
-  void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (timeLeft.value > 0) {
         timeLeft.value--;
       } else {
-        _endGame(false);
+        endGame(false);
       }
     });
   }
@@ -115,7 +122,7 @@ class AdditionController extends GetxController {
       correctAnswer.value = equations[currentQuestionIndex.value]["answer"];
       _generateChoices();
     } else {
-      _endGame(true);
+      endGame(true);
     }
   }
 
@@ -145,7 +152,7 @@ class AdditionController extends GetxController {
     }
 
     if (lives.value == 0) {
-      _endGame(false);
+      endGame(false);
       return;
     }
 
@@ -153,7 +160,7 @@ class AdditionController extends GetxController {
     if (currentQuestionIndex.value < equations.length) {
       _loadQuestion();
     } else {
-      _endGame(true);
+      endGame(true);
     }
   }
 
@@ -168,22 +175,22 @@ class AdditionController extends GetxController {
       String letterToReveal =
           currentWord.word[randomHiddenWordIndex[score.value - 1]];
 
-      print('JPY ${randomHiddenWordIndex}');
-
       for (int i = 0; i < currentWord.word.length; i++) {
         if (currentWord.word[i].toLowerCase() == letterToReveal.toLowerCase()) {
           letters[i] = currentWord.word[i];
         }
       }
 
-      print('JPYS ${score.value}');
-
       if (score.value == 5) {
-        currentWord = wordList[indices[currentWordListIndex.value]];
-
-        revealedLetters.value = currentWord.word;
+        revealedLetters.value = currentWord.word; // reveal full word
       } else {
         revealedLetters.value = letters.join('');
+
+        if (revealedLetters.value == currentWord.word) {
+          // if hidden word is fully revealed call the endGame
+          endGame(true);
+          return;
+        }
       }
     }
   }
@@ -200,181 +207,447 @@ class AdditionController extends GetxController {
       }
 
       revealedLetters.value = letters.join('');
+      availableHint.value = 0;
+
+      if (revealedLetters.value == currentWord.word) {
+        // if hidden word is fully revealed call the endGame
+        endGame(true);
+        return;
+      }
     }
-    availableHint.value = 0;
   }
 
-  void _endGame(bool completed) {
-    _timer?.cancel();
+  void endGame(bool completed) {
+    timer?.cancel();
+
+    if (completed) {
+      saveTheSuccessLevel.add(level.value);
+    }
 
     completed
-        ? Get.defaultDialog(
+        ?
+        // Get.defaultDialog(
+        //     barrierDismissible: false,
+        //     title: "Level ${level.value} Completed!",
+        //     content: Stack(
+        //       alignment: Alignment.center,
+        //       children: [
+        //         Lottie.asset(
+        //           'assets/lottie/fireworks.json',
+        //           fit: BoxFit.cover,
+        //         ),
+        //         Column(
+        //           children: [
+        //             Row(
+        //               crossAxisAlignment: CrossAxisAlignment.center,
+        //               mainAxisAlignment: MainAxisAlignment.center,
+        //               children: List.generate(
+        //                 5,
+        //                 (final index) => Icon(
+        //                   Icons.star,
+        //                   size: 20,
+        //                   color: index < score.value
+        //                       ? Colors.yellow
+        //                       : Colors.grey, // Highlight stars
+        //                 ),
+        //               ),
+        //             ),
+        //             SizedBox(
+        //               height: 20,
+        //             ),
+        //             Obx(() => Wrap(
+        //                   runAlignment: WrapAlignment.center,
+        //                   alignment: WrapAlignment.center,
+        //                   runSpacing: 8,
+        //                   spacing: 8, // Spacing between boxes
+        //                   children:
+        //                       List.generate(currentWord.word.length, (index) {
+        //                     return Container(
+        //                       width: 40,
+        //                       height: 40,
+        //                       alignment: Alignment.center,
+        //                       decoration: BoxDecoration(
+        //                         color: Colors.white,
+        //                         border:
+        //                             Border.all(color: Colors.black, width: 2),
+        //                         borderRadius: BorderRadius.circular(10),
+        //                       ),
+        //                       child: Text(
+        //                         revealedLetters.value[index],
+        //                         style: TextStyle(
+        //                             fontSize: 24, fontWeight: FontWeight.bold),
+        //                       ),
+        //                     );
+        //                   }),
+        //                 )),
+        //             Container(
+        //                 margin: EdgeInsets.all(20),
+        //                 color: Color(0xFFb6d5f0),
+        //                 padding: EdgeInsets.all(10),
+        //                 child: Text(
+        //                   currentWord.meaning,
+        //                   style: TextStyle(
+        //                       fontSize: 18, fontWeight: FontWeight.w500),
+        //                 )),
+        //             SizedBox(height: 20),
+        //             Row(
+        //               mainAxisAlignment: MainAxisAlignment.center,
+        //               children: [
+        //                 ElevatedButton(
+        //                   onPressed: () {
+        //                     Get.back();
+        //                     restartGame();
+        //                   },
+        //                   child: Text("Restart"),
+        //                 ),
+        //                 SizedBox(width: 10),
+        //                 Obx(() => ElevatedButton(
+        //                       onPressed: () {
+        //                         if (level.value == 5) {
+        //                           Get.back();
+        //                           congrats();
+        //                         } else {
+        //                           Get.back();
+        //                           nextLevel();
+        //                         }
+        //                       },
+        //                       child: Text(
+        //                           level.value == 5 ? "Continue" : "Next Level"),
+        //                     )),
+        //               ],
+        //             ),
+        //           ],
+        //         ),
+        //       ],
+        //     ),
+        //   )
+        Get.dialog(
             barrierDismissible: false,
-            title: "Level ${level.value} Completed!",
-            content: Stack(
-              alignment: Alignment.center,
-              children: [
-                Lottie.asset(
-                  'assets/lottie/fireworks.json',
-                  fit: BoxFit.cover,
+            AlertDialog(
+              backgroundColor: Color(0xFFb6d5f0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15), // Rounded corners
+                side: const BorderSide(
+                  color: Colors.white, // Border color
+                  width: 8, // Border width
                 ),
-                Column(
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        5,
-                        (final index) => Icon(
-                          Icons.star,
-                          size: 20,
-                          color: index < score.value
-                              ? Colors.yellow
-                              : Colors.grey, // Highlight stars
+              ),
+              title: Center(child: Text("Level ${level.value} Completed!")),
+              content: Stack(
+                children: [
+                  Lottie.asset(
+                    'assets/lottie/fireworks.json',
+                    fit: BoxFit.cover,
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          5,
+                          (final index) => Icon(
+                            Icons.star,
+                            size: 20,
+                            color: index < score.value
+                                ? Colors.yellow
+                                : Colors.grey, // Highlight stars
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Obx(() => Wrap(
-                          runAlignment: WrapAlignment.center,
-                          alignment: WrapAlignment.center,
-                          runSpacing: 8,
-                          spacing: 8, // Spacing between boxes
-                          children:
-                              List.generate(currentWord.word.length, (index) {
-                            return Container(
-                              width: 40,
-                              height: 40,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border:
-                                    Border.all(color: Colors.black, width: 2),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                revealedLetters.value[index],
-                                style: TextStyle(
-                                    fontSize: 24, fontWeight: FontWeight.bold),
-                              ),
-                            );
-                          }),
-                        )),
-                    Container(
-                        margin: EdgeInsets.all(20),
-                        color: Color(0xFFb6d5f0),
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          currentWord.meaning,
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500),
-                        )),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            Get.back();
-                            _restartGame();
-                          },
-                          child: Text("Restart"),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Obx(() => Wrap(
+                            runAlignment: WrapAlignment.center,
+                            alignment: WrapAlignment.center,
+                            runSpacing: 8,
+                            spacing: 8, // Spacing between boxes
+                            children:
+                                List.generate(currentWord.word.length, (index) {
+                              return Container(
+                                width: 40,
+                                height: 40,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border:
+                                      Border.all(color: Colors.black, width: 2),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  revealedLetters.value[index],
+                                  style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              );
+                            }),
+                          )),
+                      Container(
+                          margin: EdgeInsets.all(20),
+                          color: Color(0xFFb6d5f0),
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            currentWord.meaning,
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w500),
+                          )),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                Row(
+                  spacing: 20,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade300,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              10), // Set border radius to 10
                         ),
-                        SizedBox(width: 10),
-                        Obx(() => ElevatedButton(
-                              onPressed: () {
-                                if (level.value == 5) {
-                                  Get.back();
-                                  congrats();
-                                } else {
-                                  Get.back();
-                                  nextLevel();
-                                }
-                              },
-                              child: Text(
-                                  level.value == 5 ? "Continue" : "Next Level"),
-                            )),
-                      ],
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        textStyle: TextStyle(fontSize: 20, color: Colors.white),
+                      ),
+                      onPressed: () {
+                        Get.back();
+                        restartGame();
+                      },
+                      child: Text("Restart",
+                          style: TextStyle(color: Colors.black)),
                     ),
+                    Obx(() => ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
+                            textStyle:
+                                TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                          onPressed: () {
+                            if (level.value == 5) {
+                              Get.back();
+                              congrats();
+                            } else {
+                              Get.back();
+                              nextLevel();
+                            }
+                          },
+                          child: Text(
+                            level.value == 5 ? "Continue" : "Next Level",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        )),
                   ],
                 ),
               ],
             ),
           )
-        : Get.defaultDialog(
+        : Get.dialog(
             barrierDismissible: false,
-            title: lives.value == 0 ? "Out of lives" : 'Ran out of time',
-            content: Column(
-              children: [
-                Lottie.asset(
-                  'assets/lottie/game_over.json',
-                  width: 150,
-                  fit: BoxFit.cover,
+            AlertDialog(
+              backgroundColor: Color(0xFFb6d5f0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15), // Rounded corners
+                side: const BorderSide(
+                  color: Colors.white, // Border color
+                  width: 8, // Border width
+                ),
+              ),
+              title: Center(
+                  child: lives.value == 0
+                      ? Text("Out of lives!")
+                      : Text("Ran out of time!")),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Lottie.asset(
+                    'assets/lottie/game_over.json',
+                    width: 150,
+                    fit: BoxFit.cover,
+                  ),
+                ],
+              ),
+              actions: [
+                Row(
+                  spacing: 20,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        textStyle: TextStyle(fontSize: 20, color: Colors.white),
+                      ),
+                      onPressed: () {
+                        Get.back();
+                        timeLeft.value = totalTime;
+                        restartGame();
+                      },
+                      child: Text(
+                        'Retry',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            textConfirm: "Restart",
-            onConfirm: () {
-              Get.back();
-              _restartGame();
-            },
           );
+
+    // Get.defaultDialog(
+    //     barrierDismissible: false,
+    //     title: lives.value == 0 ? "Out of lives" : 'Ran out of time',
+    //     content: Column(
+    //       children: [
+    //         Lottie.asset(
+    //           'assets/lottie/game_over.json',
+    //           width: 150,
+    //           fit: BoxFit.cover,
+    //         ),
+    //       ],
+    //     ),
+    //     textConfirm: "Restart",
+    //     onConfirm: () {
+    //       Get.back();
+    //       restartGame();
+    //     },
+    //   );
   }
 
   void congrats() {
-    Get.defaultDialog(
+    Get.dialog(
       barrierDismissible: false,
-      title: 'Congratulation',
-      content: Stack(
-        alignment: Alignment.center,
-        children: [
-          Lottie.asset(
-            'assets/lottie/congrats.json',
-            width: 250,
-            fit: BoxFit.cover,
+      AlertDialog(
+        backgroundColor: Color(0xFFb6d5f0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15), // Rounded corners
+          side: const BorderSide(
+            color: Colors.white, // Border color
+            width: 8, // Border width
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+        ),
+        title: Center(
             child: Text(
-              "Congratulations on completing the quiz task! Your hard work and dedication truly paid off!",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
+          "Congratulation!",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        )),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Lottie.asset(
+                  'assets/lottie/congrats.json',
+                  width: 250,
+                  fit: BoxFit.cover,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    "Congratulations on completing the quiz task! Your hard work and dedication truly paid off!",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              ],
             ),
-          )
+          ],
+        ),
+        actions: [
+          Row(
+            spacing: 20,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  textStyle: TextStyle(fontSize: 20, color: Colors.white),
+                ),
+                onPressed: () {
+                  Get.back();
+                  currentWordListIndex.value = 0;
+                  restartGame();
+                },
+                child: Text(
+                  'Close',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
-      textConfirm: "Close",
-      onConfirm: () {
-        Get.back();
-        currentWordListIndex.value = 0;
-        _restartGame();
-      },
     );
+    // Get.defaultDialog(
+    //   barrierDismissible: false,
+    //   title: 'Congratulation',
+    //   content: Stack(
+    //     alignment: Alignment.center,
+    //     children: [
+    //       Lottie.asset(
+    //         'assets/lottie/congrats.json',
+    //         width: 250,
+    //         fit: BoxFit.cover,
+    //       ),
+    //       Padding(
+    //         padding: const EdgeInsets.all(8.0),
+    //         child: Text(
+    //           "Congratulations on completing the quiz task! Your hard work and dedication truly paid off!",
+    //           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+    //           textAlign: TextAlign.center,
+    //         ),
+    //       )
+    //     ],
+    //   ),
+    //   textConfirm: "Close",
+    //   onConfirm: () {
+    //     Get.back();
+    //     currentWordListIndex.value = 0;
+    //     restartGame();
+    //   },
+    // );
   }
 
-  void _restartGame() {
+  void restartGame() {
+    timer?.cancel();
     currentQuestionIndex.value = 0;
 
     lives.value = totalLives;
     level.value = 1;
     score.value = 0;
-    timeLeft.value = totalTime;
+    //timeLeft.value = totalTime;
 
-    isGameOver.value = false;
     availableHint.value = 1;
     randomNumber.value = 10;
 
     isCorrect.clear();
     indices.clear();
-    _randomHiddenWordIndex(currentWord.word.length);
+
     _randomTheIndexOfWordList();
     currentWord = wordList[indices[currentWordListIndex.value]];
     revealedLetters.value = "-" * currentWord.word.length;
+    _randomHiddenWordIndex(currentWord.word.length);
     _generateEquations();
     _loadQuestion();
-    _startTimer();
+    startTimer();
   }
 
   void nextLevel() {
@@ -387,15 +660,15 @@ class AdditionController extends GetxController {
     currentWord = wordList[indices[currentWordListIndex.value]];
     //currentWord = wordList[currentWordListIndex.value];
     score.value = 0;
-    timeLeft.value = totalTime;
+    //timeLeft.value = totalTime;
     currentQuestionIndex.value = 0;
     revealedLetters.value = "-" * currentWord.word.length;
     isCorrect.clear();
-    isGameOver.value = false;
+
     availableHint.value = 1;
     _randomHiddenWordIndex(currentWord.word.length);
     _generateEquations();
     _loadQuestion();
-    _startTimer();
+    startTimer();
   }
 }

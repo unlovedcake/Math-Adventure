@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:get/get.dart';
+import 'package:math_adventure/app/modules/home/views/username_view.dart';
 import 'package:math_adventure/app/routes/app_pages.dart';
 
 import '../controllers/home_controller.dart';
@@ -9,7 +11,6 @@ class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.put(HomeController());
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -26,13 +27,13 @@ class HomeView extends GetView<HomeController> {
             _ButtonHomeWidget(
               label: 'Enter',
               onPressed: () {
-                Get.toNamed(AppPages.ADDITION);
+                Get.to(() => UserNameView());
               },
             ),
             _ButtonHomeWidget(
               label: 'Instruction',
               onPressed: () {
-                Get.toNamed(AppPages.ADDITION);
+                Get.toNamed(AppPages.INSTRUCTION);
               },
             ),
             _ButtonHomeWidget(
@@ -47,7 +48,15 @@ class HomeView extends GetView<HomeController> {
                 Get.toNamed(AppPages.ADDITION);
               },
             ),
-          ],
+          ].animate(
+            effects: [
+              const FadeEffect(),
+              const ScaleEffect(),
+            ],
+            interval: 1000.ms,
+          ).fade(
+            duration: 600.ms,
+          ),
         ),
       ),
     );
