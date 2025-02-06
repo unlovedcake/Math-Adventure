@@ -220,108 +220,8 @@ class AdditionController extends GetxController {
   void endGame(bool completed) {
     timer?.cancel();
 
-    if (completed) {
-      saveTheSuccessLevel.add(level.value);
-    }
-
     completed
-        ?
-        // Get.defaultDialog(
-        //     barrierDismissible: false,
-        //     title: "Level ${level.value} Completed!",
-        //     content: Stack(
-        //       alignment: Alignment.center,
-        //       children: [
-        //         Lottie.asset(
-        //           'assets/lottie/fireworks.json',
-        //           fit: BoxFit.cover,
-        //         ),
-        //         Column(
-        //           children: [
-        //             Row(
-        //               crossAxisAlignment: CrossAxisAlignment.center,
-        //               mainAxisAlignment: MainAxisAlignment.center,
-        //               children: List.generate(
-        //                 5,
-        //                 (final index) => Icon(
-        //                   Icons.star,
-        //                   size: 20,
-        //                   color: index < score.value
-        //                       ? Colors.yellow
-        //                       : Colors.grey, // Highlight stars
-        //                 ),
-        //               ),
-        //             ),
-        //             SizedBox(
-        //               height: 20,
-        //             ),
-        //             Obx(() => Wrap(
-        //                   runAlignment: WrapAlignment.center,
-        //                   alignment: WrapAlignment.center,
-        //                   runSpacing: 8,
-        //                   spacing: 8, // Spacing between boxes
-        //                   children:
-        //                       List.generate(currentWord.word.length, (index) {
-        //                     return Container(
-        //                       width: 40,
-        //                       height: 40,
-        //                       alignment: Alignment.center,
-        //                       decoration: BoxDecoration(
-        //                         color: Colors.white,
-        //                         border:
-        //                             Border.all(color: Colors.black, width: 2),
-        //                         borderRadius: BorderRadius.circular(10),
-        //                       ),
-        //                       child: Text(
-        //                         revealedLetters.value[index],
-        //                         style: TextStyle(
-        //                             fontSize: 24, fontWeight: FontWeight.bold),
-        //                       ),
-        //                     );
-        //                   }),
-        //                 )),
-        //             Container(
-        //                 margin: EdgeInsets.all(20),
-        //                 color: Color(0xFFb6d5f0),
-        //                 padding: EdgeInsets.all(10),
-        //                 child: Text(
-        //                   currentWord.meaning,
-        //                   style: TextStyle(
-        //                       fontSize: 18, fontWeight: FontWeight.w500),
-        //                 )),
-        //             SizedBox(height: 20),
-        //             Row(
-        //               mainAxisAlignment: MainAxisAlignment.center,
-        //               children: [
-        //                 ElevatedButton(
-        //                   onPressed: () {
-        //                     Get.back();
-        //                     restartGame();
-        //                   },
-        //                   child: Text("Restart"),
-        //                 ),
-        //                 SizedBox(width: 10),
-        //                 Obx(() => ElevatedButton(
-        //                       onPressed: () {
-        //                         if (level.value == 5) {
-        //                           Get.back();
-        //                           congrats();
-        //                         } else {
-        //                           Get.back();
-        //                           nextLevel();
-        //                         }
-        //                       },
-        //                       child: Text(
-        //                           level.value == 5 ? "Continue" : "Next Level"),
-        //                     )),
-        //               ],
-        //             ),
-        //           ],
-        //         ),
-        //       ],
-        //     ),
-        //   )
-        Get.dialog(
+        ? Get.dialog(
             barrierDismissible: false,
             AlertDialog(
               backgroundColor: Color(0xFFb6d5f0),
@@ -371,10 +271,12 @@ class AdditionController extends GetxController {
                                 height: 40,
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border:
-                                      Border.all(color: Colors.black, width: 2),
-                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: Colors.white, // Border color
+                                      width: 2.0, // Border thickness
+                                    ),
+                                  ),
                                 ),
                                 child: Text(
                                   revealedLetters.value[index],
@@ -418,8 +320,8 @@ class AdditionController extends GetxController {
                         Get.back();
                         restartGame();
                       },
-                      child: Text("Restart",
-                          style: TextStyle(color: Colors.black)),
+                      child:
+                          Text("Retry", style: TextStyle(color: Colors.black)),
                     ),
                     Obx(() => ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -437,8 +339,9 @@ class AdditionController extends GetxController {
                               Get.back();
                               congrats();
                             } else {
-                              Get.back();
                               nextLevel();
+                              Get.back();
+                              Get.back();
                             }
                           },
                           child: Text(
@@ -454,7 +357,7 @@ class AdditionController extends GetxController {
         : Get.dialog(
             barrierDismissible: false,
             AlertDialog(
-              backgroundColor: Color(0xFFb6d5f0),
+              backgroundColor: Colors.red,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15), // Rounded corners
                 side: const BorderSide(
@@ -469,6 +372,21 @@ class AdditionController extends GetxController {
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  lives.value == 0
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            3,
+                            (final index) => Icon(
+                              Icons.favorite,
+                              size: 30,
+                              color: index < lives.value
+                                  ? Colors.red
+                                  : Colors.grey, // Highlight stars
+                            ),
+                          ),
+                        )
+                      : Text(timeLeft.value.toString()),
                   Lottie.asset(
                     'assets/lottie/game_over.json',
                     width: 150,
@@ -483,7 +401,7 @@ class AdditionController extends GetxController {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: Colors.red,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -633,7 +551,7 @@ class AdditionController extends GetxController {
     lives.value = totalLives;
     level.value = 1;
     score.value = 0;
-    //timeLeft.value = totalTime;
+    timeLeft.value = totalTime;
 
     availableHint.value = 1;
     randomNumber.value = 10;
@@ -651,24 +569,33 @@ class AdditionController extends GetxController {
   }
 
   void nextLevel() {
-    if (level.value != 5) {
-      currentWordListIndex.value++;
-      level.value++;
-      randomNumber.value += 10;
+    try {
+      if (level.value != 5) {
+        currentWordListIndex.value++;
+        level.value++;
+        randomNumber.value += 10;
+      }
+
+      saveTheSuccessLevel.add(level.value);
+
+      // currentWord = wordList[indices[currentWordListIndex.value]];
+      currentWord =
+          wordList.elementAt(indices.elementAt(currentWordListIndex.value));
+
+      //currentWord = wordList[currentWordListIndex.value];
+      score.value = 0;
+      timeLeft.value = totalTime;
+      currentQuestionIndex.value = 0;
+      revealedLetters.value = "-" * currentWord.word.length;
+      isCorrect.clear();
+
+      availableHint.value = 1;
+      _randomHiddenWordIndex(currentWord.word.length);
+      _generateEquations();
+      _loadQuestion();
+      //startTimer();
+    } catch (e) {
+      debugPrint('Error: $e');
     }
-
-    currentWord = wordList[indices[currentWordListIndex.value]];
-    //currentWord = wordList[currentWordListIndex.value];
-    score.value = 0;
-    //timeLeft.value = totalTime;
-    currentQuestionIndex.value = 0;
-    revealedLetters.value = "-" * currentWord.word.length;
-    isCorrect.clear();
-
-    availableHint.value = 1;
-    _randomHiddenWordIndex(currentWord.word.length);
-    _generateEquations();
-    _loadQuestion();
-    startTimer();
   }
 }

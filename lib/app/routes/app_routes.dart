@@ -8,6 +8,8 @@ abstract class Routes {
   static const INSTRUCTION = _Paths.INSTRUCTION;
   static const SELECT_OPERATION = _Paths.SELECT_OPERATION;
   static const MAP_LEVEL = _Paths.MAP_LEVEL;
+  static const SPLASH = _Paths.SPLASH;
+  static const ONBOARDING = _Paths.ONBOARDING;
 }
 
 abstract class _Paths {
@@ -17,4 +19,6 @@ abstract class _Paths {
   static const INSTRUCTION = '/instruction';
   static const SELECT_OPERATION = '/select-operation';
   static const MAP_LEVEL = '/map-level';
+  static const SPLASH = '/splash';
+  static const ONBOARDING = '/onboarding';
 }

@@ -8,13 +8,21 @@ import '../modules/instruction/bindings/instruction_binding.dart';
 import '../modules/instruction/views/instruction_view.dart';
 import '../modules/map_level/bindings/map_level_binding.dart';
 import '../modules/map_level/views/map_level_view.dart';
+import '../modules/onboarding/bindings/onboarding_binding.dart';
+import '../modules/onboarding/views/onboarding_view.dart';
 import '../modules/select_operation/bindings/select_operation_binding.dart';
 import '../modules/select_operation/views/select_operation_view.dart';
+import '../modules/splash/bindings/splash_binding.dart';
+import '../modules/splash/views/splash_view.dart';
 
 part 'app_routes.dart';
 
 class AppPages {
   AppPages._();
+
+  static const SPLASH = Routes.SPLASH;
+
+  static const ONBOARDING = Routes.ONBOARDING;
 
   static const INITIAL = Routes.HOME;
 
@@ -50,6 +58,16 @@ class AppPages {
       name: _Paths.MAP_LEVEL,
       page: () => const MapLevelView(),
       binding: MapLevelBinding(),
+    ),
+    GetPage(
+      name: _Paths.SPLASH,
+      page: () => const SplashView(),
+      binding: SplashBinding(),
+    ),
+    GetPage(
+      name: _Paths.ONBOARDING,
+      page: () => OnboardingView(),
+      binding: OnboardingBinding(),
     ),
   ];
 }

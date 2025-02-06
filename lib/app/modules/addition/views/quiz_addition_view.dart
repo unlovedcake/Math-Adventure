@@ -10,6 +10,8 @@ class QuizAdditionView extends GetView<AdditionController> {
   @override
   Widget build(BuildContext context) {
     final AdditionController controller = Get.put(AdditionController());
+
+    print('level.value ${controller.saveTheSuccessLevel}');
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xFF030f32),
