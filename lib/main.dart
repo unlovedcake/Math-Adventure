@@ -10,7 +10,7 @@ Future<void> main() async {
     GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: "FLY ME TO THE SPACE THE MATH ADVENTURE",
-      initialRoute: AppPages.ADDITION,
+      initialRoute: AppPages.SPLASH,
       getPages: AppPages.routes,
     ),
   );
