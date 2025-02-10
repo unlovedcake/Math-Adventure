@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:get/get.dart';
+import 'package:math_adventure/app/modules/home/views/username_view.dart';
 import 'package:math_adventure/app/routes/app_pages.dart';
 
 import '../controllers/home_controller.dart';
@@ -9,7 +11,6 @@ class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.put(HomeController());
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -20,35 +21,52 @@ class HomeView extends GetView<HomeController> {
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 20,
-          children: [
-            _ButtonHomeWidget(
-              label: 'Enter',
-              onPressed: () {
-                Get.toNamed(AppPages.ADDITION);
-              },
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 20,
+            children: [
+              Text(
+                'WELCOME TO THE ADVENTURE!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 30,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
+              _ButtonHomeWidget(
+                label: 'ENTER',
+                onPressed: () {
+                  Get.to(() => UserNameView());
+                },
+              ),
+              _ButtonHomeWidget(
+                label: 'INSTRUCTION',
+                onPressed: () {
+                  Get.toNamed(AppPages.INSTRUCTION);
+                },
+              ),
+              _ButtonHomeWidget(
+                label: 'SETTING',
+                onPressed: () {
+                  Get.toNamed(AppPages.SETTING);
+                },
+              ),
+              _ButtonHomeWidget(
+                label: 'ABOUT',
+                onPressed: () {
+                  Get.toNamed(AppPages.ADDITION);
+                },
+              ),
+            ]
+            // .animate(
+            //   effects: [
+            //     const FadeEffect(),
+            //     const ScaleEffect(),
+            //   ],
+            //   interval: 600.ms,
+            // ).fade(
+            //   duration: 600.ms,
+            // ),
             ),
-            _ButtonHomeWidget(
-              label: 'Instruction',
-              onPressed: () {
-                Get.toNamed(AppPages.ADDITION);
-              },
-            ),
-            _ButtonHomeWidget(
-              label: 'Setting',
-              onPressed: () {
-                Get.toNamed(AppPages.ADDITION);
-              },
-            ),
-            _ButtonHomeWidget(
-              label: 'About',
-              onPressed: () {
-                Get.toNamed(AppPages.ADDITION);
-              },
-            ),
-          ],
-        ),
       ),
     );
   }

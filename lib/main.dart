@@ -8,8 +8,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     GetMaterialApp(
-      title: "Application",
-      initialRoute: AppPages.INITIAL,
+      debugShowCheckedModeBanner: false,
+      title: "FLY ME TO THE SPACE THE MATH ADVENTURE",
+      initialRoute: AppPages.SPLASH,
       getPages: AppPages.routes,
     ),
   );
