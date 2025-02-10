@@ -9,6 +9,7 @@ class SelectOperationController extends GetxController {
     {"image": "assets/images/minus.png", "route": AppPages.ADDITION},
     {"image": "assets/images/times.png", "route": AppPages.ADDITION},
     {"image": "assets/images/divide.png", "route": AppPages.ADDITION},
+    {"image": "assets/images/question_mark.png", "route": AppPages.ADDITION},
   ].obs;
 
   void navigateTo(String route) {

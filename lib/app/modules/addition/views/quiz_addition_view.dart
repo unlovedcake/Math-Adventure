@@ -1,17 +1,21 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:math_adventure/app/modules/addition/controllers/addition_controller.dart';
+import 'package:math_adventure/app/routes/app_pages.dart';
 
-class QuizAdditionView extends GetView<AdditionController> {
+import '../../../data/model/constants/global_variable.dart';
+
+class QuizAdditionView extends StatelessWidget {
   const QuizAdditionView({super.key});
+
   @override
   Widget build(BuildContext context) {
     final AdditionController controller = Get.put(AdditionController());
 
-    print('level.value ${controller.saveTheSuccessLevel}');
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xFF030f32),
@@ -86,6 +90,11 @@ class QuizAdditionView extends GetView<AdditionController> {
                                 color: Colors.black,
                               ),
                               onPressed: () {
+                                if (controller.audioPlayerMusic.state ==
+                                    PlayerState.playing) {
+                                  controller.audioPlayerMusic.stop();
+                                }
+
                                 controller.timer?.cancel();
                                 Get.back();
                               },
@@ -101,7 +110,12 @@ class QuizAdditionView extends GetView<AdditionController> {
                               ),
                               onPressed: () {
                                 controller.timer?.cancel();
-                                Get.back();
+                                if (controller.audioPlayerMusic.state ==
+                                    PlayerState.playing) {
+                                  controller.audioPlayerMusic.pause();
+                                }
+
+                                Get.toNamed(AppPages.SETTING);
                               },
                             ),
                           ),
@@ -304,7 +318,7 @@ class QuizAdditionView extends GetView<AdditionController> {
                                 (final index) => Icon(
                                   Icons.star,
                                   size: 30,
-                                  color: index < controller.score.value
+                                  color: index < controller.score.value ~/ 2
                                       ? Colors.yellow
                                       : Colors.grey, // Highlight stars
                                 ),

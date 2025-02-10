@@ -52,31 +52,40 @@ class InstructionView extends GetView<InstructionController> {
                 icon: Icons.calculate,
                 title: "Solve the Equations",
                 description:
-                    "You will be given a set of five equations. Enter the correct answer to earn points.",
+                    "Choose the correct answers to complete the hidden word. Finish before the time runs out to earn points!",
               ),
               _buildInstructionStep(
                 icon: Icons.star,
                 title: "Earning Stars",
-                description:
-                    "Each correct answer earns ⭐ one star point. Try to collect as many stars as possible!",
+                description: "You can earn up to 5 stars (⭐️)per level.  ",
               ),
               _buildInstructionStep(
                 icon: Icons.favorite,
                 title: "Losing Lives",
                 description:
-                    "Every incorrect answer will ❌ subtract one heart. If you lose all hearts, the game is over!",
+                    "You have 3 lives (❤️). Every wrong answer takes away one life. If you lose all lives or run out of time, it's game over!",
               ),
               _buildInstructionStep(
                 icon: Icons.lightbulb,
                 title: "Using Hints",
                 description:
-                    "You can use a hint 💡 once per game to help you find the correct answer. Use it wisely!",
+                    "You can use one hint (💡)per level. It will show one letter of the hidden word.",
               ),
               _buildInstructionStep(
                 icon: Icons.emoji_events,
-                title: "Winning & Losing",
+                title: "Next Level",
                 description:
-                    "Try to finish all equations with the highest ⭐ stars possible before losing all ❤️ lives!",
+                    "Solve all the equations and uncover the hidden word to move to the next level. ",
+              ),
+              SizedBox(height: 20),
+              Center(
+                child: Text(
+                  'Have fun and do your best!',
+                  style: TextStyle(
+                      fontSize: 22,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
               SizedBox(height: 20),
               Center(
@@ -112,9 +121,9 @@ class InstructionView extends GetView<InstructionController> {
                 const FadeEffect(),
                 const SaturateEffect(),
               ],
-              interval: 600.ms,
+              interval: 400.ms,
             ).fade(
-              duration: 600.ms,
+              duration: 400.ms,
             ),
           ),
         ),

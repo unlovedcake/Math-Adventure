@@ -15,14 +15,14 @@ class SplashView extends GetView<SplashController> {
         children: [
           // Background Image
           Image.asset(
-            "assets/images/first_bg.png", // Replace with your image path
+            "assets/images/splash_bg.png", // Replace with your image path
             fit: BoxFit.cover,
           ),
 
           // Linear Progress Indicator (Animated)
           Center(
             child: Obx(() => Container(
-                  margin: EdgeInsets.only(top: 100),
+                  margin: EdgeInsets.only(top: 200),
                   width: 200,
                   child: LinearProgressIndicator(
                     value: controller.progressValue.value,

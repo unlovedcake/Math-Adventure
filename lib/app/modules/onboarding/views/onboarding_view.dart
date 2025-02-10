@@ -85,31 +85,28 @@ class OnboardingView extends GetView<OnboardingController> {
               ),
             ),
           ),
-          // Previous button
-
-          // Next button
-          Positioned(
-            bottom: 50,
-            right: 20,
-            child: ElevatedButton(
-              onPressed: controller.skipToLast,
-              child: Text("Skip"),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.black,
-              ),
-            ),
-          ),
 
           // Get Started Button (Only on Last Page)
           Obx(() {
-            return controller.currentIndex.value == controller.images.length - 1
+            return controller.currentIndex.value != controller.images.length - 1
                 ? Positioned(
                     bottom: 50,
                     right: 20,
                     child: ElevatedButton(
+                      onPressed: controller.skipToLast,
+                      child: Text("Skip"),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.black,
+                      ),
+                    ),
+                  )
+                : Positioned(
+                    bottom: 50,
+                    right: 20,
+                    child: ElevatedButton(
                       onPressed: () {
-                        Get.offNamed(AppPages.INITIAL);
+                        Get.offNamed(AppPages.INTRODUCINGAERO);
                       },
                       child: Text("Get Started"),
                       style: ElevatedButton.styleFrom(
@@ -117,8 +114,7 @@ class OnboardingView extends GetView<OnboardingController> {
                         backgroundColor: Colors.blue,
                       ),
                     ),
-                  )
-                : SizedBox();
+                  );
           }),
         ],
       ),

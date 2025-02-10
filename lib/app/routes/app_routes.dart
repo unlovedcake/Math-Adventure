@@ -10,6 +10,9 @@ abstract class Routes {
   static const MAP_LEVEL = _Paths.MAP_LEVEL;
   static const SPLASH = _Paths.SPLASH;
   static const ONBOARDING = _Paths.ONBOARDING;
+  static const INTRODUCING_AERO = _Paths.INTRODUCING_AERO;
+  static const SETTING = _Paths.SETTING;
+  static const MINUS = _Paths.MINUS;
 }
 
 abstract class _Paths {
@@ -21,4 +24,7 @@ abstract class _Paths {
   static const MAP_LEVEL = '/map-level';
   static const SPLASH = '/splash';
   static const ONBOARDING = '/onboarding';
+  static const INTRODUCING_AERO = '/introducing-aero';
+  static const SETTING = '/setting';
+  static const MINUS = '/minus';
 }

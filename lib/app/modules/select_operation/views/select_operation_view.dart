@@ -43,34 +43,39 @@ class SelectOperationView extends GetView<SelectOperationController> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(
-          spacing: 20,
-          children: [
-            Expanded(
-              child: GridView.builder(
-                itemCount: controller.operators.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // Two columns
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 1, // Square shape
-                ),
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () => controller.navigateTo(
-                        controller.operators[index]['route']!), // Navigate
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: List.generate(controller.operators.length, (index) {
+                bool isLastOdd = controller.operators.length % 2 == 1 &&
+                    index == controller.operators.length - 1;
+                return InkWell(
+                  onTap: () => controller
+                      .navigateTo(controller.operators[index]['route']),
+                  child: Container(
+                    width: isLastOdd
+                        ? constraints.maxWidth / 2 - 4
+                        : constraints.maxWidth / 2 - 8,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey[300],
+                    ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Image.asset(
-                        controller.operators[index]['image']!,
+                        controller.operators[index]['image'],
                         fit: BoxFit.cover,
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
-          ],
+                  ),
+                );
+              }),
+            );
+          },
         ),
       ),
       // body: Center(
