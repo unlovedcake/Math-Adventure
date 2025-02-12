@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-
 import 'package:get/get.dart';
 
 import '../controllers/instruction_controller.dart';
@@ -12,14 +11,13 @@ class InstructionView extends GetView<InstructionController> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent, // Transparent AppBar
+        backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text("How to Play",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 28,
                 color: Colors.white)),
-
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(

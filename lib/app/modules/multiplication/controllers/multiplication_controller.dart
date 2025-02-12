@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:math';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:math_adventure/app/data/model/constants/global_variable.dart';
 import 'package:math_adventure/app/data/model/word_model.dart';
 
-class AdditionController extends GetxController {
+class MultiplicationController extends GetxController {
   final int totalLives = 3;
   final int totalEquations = 10;
   final int totalTime = 180;
@@ -13,6 +16,7 @@ class AdditionController extends GetxController {
   final RxInt level = 1.obs;
   final RxInt lives = 3.obs;
   final RxInt score = 0.obs;
+
   final RxString revealedLetters = ''.obs;
   final RxInt timeLeft = 180.obs;
   final RxInt currentQuestionIndex = 0.obs;
@@ -50,39 +54,57 @@ class AdditionController extends GetxController {
 
   final List<WordModel> wordList = <WordModel>[
     WordModel(
-        word: "Rene Descartes",
+        word: "DIGITS",
         meaning:
-            "He was a Mathematician, Philosopher, and Scientist. He invented the cartesian coordinate system or known as cartesian plane."),
+            "Typically refers to numbers written out in words instead of numerals."),
     WordModel(
-        word: "Lovely",
-        meaning: "Lovely means charming, delightful, or beautiful."),
+        word: "INFINITY",
+        meaning:
+            "something that is endless, limitless, or unbounded. It is often used in mathematics, physics, and philosophy to represent something that goes on forever."),
     WordModel(word: "Happy", meaning: "Happy means feeling joy and pleasure."),
     WordModel(
-        word: "Brave",
-        meaning: "Brave means showing courage in difficult situations."),
+        word: "SPHERE",
+        meaning:
+            "is a perfectly round three-dimensional object where every point on its surface is equidistant from its center. It is similar to a ball or a globe."),
     WordModel(
-        word: "Smart",
-        meaning: "Smart means having intelligence and quick thinking."),
+        word: "EUCLID",
+        meaning:
+            'was an ancient Greek mathematician, often called the "Father of Geometry." He lived around 300 BCE and wrote the famous book "Elements," which laid the foundation for modern geometry.'),
     WordModel(
-        word: "Albert Eistien",
-        meaning: "Smart means having intelligence and quick thinking."),
+        word: "GREATER THAN",
+        meaning:
+            "means larger, bigger, or more than something else in size, number, value, or importance."),
     WordModel(
-        word: "Nicola Testla",
-        meaning: "Smart means having intelligence and quick thinking."),
+        word: "BAR GRAPH",
+        meaning:
+            "s a type of chart that uses rectangular bars to represent data. The length or height of each bar is proportional to the value it represents."),
+    WordModel(word: "Happy", meaning: "Happy means feeling joy and pleasure."),
     WordModel(
-        word: "James Bron",
-        meaning: "Smart means having intelligence and quick thinking."),
+        word: "NEWTON",
+        meaning:
+            "was a famous English mathematician, physicist, and astronomer who made groundbreaking contributions to science. He is best known for his laws of motion and universal gravitation, which laid the foundation for classical physics."),
     WordModel(
-        word: "Love Cake",
-        meaning: "Smart means having intelligence and quick thinking."),
+        word: "PLACE VALUE",
+        meaning:
+            "refers to the value of each digit in a number based on its position. Each digit's place determines its actual worth."),
     WordModel(
-        word: "Albert Eistien",
-        meaning: "Smart means having intelligence and quick thinking."),
+        word: "ROMAN NUMERALS",
+        meaning:
+            "are a number system used in ancient Rome, where letters represent numbers instead of digits (0-9)."),
+    WordModel(
+        word: "KHAYYAM",
+        meaning:
+            "was a Persian mathematician, astronomer, philosopher, and poet. He is best known for mathematics and algebra."),
   ];
 
   final RxList<int> indices = <int>[].obs;
 
   final RxList<int> randomHiddenWordIndex = <int>[].obs;
+
+  final AudioPlayer audioPlayerSound = AudioPlayer();
+  final AudioPlayer audioPlayerMusic = AudioPlayer();
+
+  final isSoundOn = false.obs;
 
   @override
   void onInit() {
@@ -93,30 +115,61 @@ class AdditionController extends GetxController {
   @override
   void onClose() {
     timer?.cancel();
+    audioPlayerSound.dispose();
+    audioPlayerMusic.dispose();
     super.onClose();
+  }
+
+  void playMusic() async {
+    try {
+      if (isMusicIsOn.value &&
+          currentRoute.value == "/QuizMultiplicationView") {
+        // Play audio when turned ON
+        await audioPlayerMusic.play(
+            AssetSource('audio/music_multiplication.mp3'),
+            mode: PlayerMode.mediaPlayer);
+        await audioPlayerMusic.setReleaseMode(ReleaseMode.loop);
+      } else {
+        audioPlayerMusic.stop();
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  void playSound(String path) async {
+    try {
+      if (isSoundIsOn.value) {
+        await audioPlayerSound.play(AssetSource(path),
+            mode: PlayerMode.lowLatency);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   void initializeRandomEquation() {
     saveTheSuccessLevel.add(level.value);
     _randomTheIndexOfWordList();
-
-    _randomHiddenWordIndex(currentWord.word.length);
+    // _randomHiddenWordIndex();
     _generateEquations();
 
     _loadQuestion();
 
-    revealedLetters.value = "-" * currentWord.word.length;
+    revealedLetters.value = " " * currentWord.word.length;
+    // " " * currentWord.word.replaceAll(RegExp(r'\s+'), '').length;
+
+    for (int i = 0; i < currentWord.word.length; i++) {
+      if (revealedLetters.value[i] == ' ') {
+        randomHiddenWordIndex.add(i);
+      }
+    }
   }
 
   void _randomTheIndexOfWordList() {
     indices.value = List.generate(wordList.length, (index) => index);
     indices.shuffle(); // Shuffle the list of words
     currentWord = wordList[indices[currentWordListIndex.value]];
-  }
-
-  void _randomHiddenWordIndex(int wordLength) {
-    randomHiddenWordIndex.value = List.generate(wordLength, (index) => index);
-    randomHiddenWordIndex.shuffle(); // Shuffle the index of current word
   }
 
   void _generateEquations() {
@@ -126,9 +179,9 @@ class AdditionController extends GetxController {
     for (int i = 0; i < totalEquations; i++) {
       int num1 = random.nextInt(randomNumber.value) + 1;
       int num2 = random.nextInt(randomNumber.value) + 1;
-      int answer = num1 + num2;
+      int answer = num1 * num2;
       equations.add({
-        "question": "$num1 + $num2 = ?",
+        "question": "$num1 x $num2 = ?",
         "answer": answer,
       });
     }
@@ -175,76 +228,113 @@ class AdditionController extends GetxController {
     choices.value = options.toList()..shuffle();
   }
 
+  RxInt scoreStar = 0.obs;
+  int starScore(int score) {
+    switch (score) {
+      case 2:
+        return scoreStar.value = 1;
+      case 4:
+        return scoreStar.value = 2;
+      case 6:
+        return scoreStar.value = 3;
+      case 8:
+        return scoreStar.value = 4;
+      case 10:
+        return scoreStar.value = 5;
+    }
+    return scoreStar.value;
+  }
+
   void checkAnswer(int selectedAnswer) {
+    //if (audioPlayerSound.state == PlayerState.playing) return;
+
     if (selectedAnswer == correctAnswer.value) {
+      playSound('audio/correct_sound.wav');
       score.value++;
 
       //scoreSet.add({'score': score.value, 'level': level.value});
       scoreSet[level.value - 1] = {
         ...scoreSet[level.value - 1], // Keep existing values
-        'score': score.value, // Update only 'score'
+        'score': starScore(score.value),
       };
 
       isCorrect.add(true);
       revealNextLetter();
     } else {
+      playSound('audio/wrong_sound.wav');
       lives.value--;
       isCorrect.add(false);
     }
 
     if (lives.value == 0) {
       endGame(false);
+
       return;
     }
 
     currentQuestionIndex.value++;
     if (currentQuestionIndex.value < equations.length) {
-      // as long as there is equations not answer load next
       _loadQuestion();
     } else {
-      //end game if all equations answered
+      revealedLetters.value = currentWord.word;
       endGame(true);
     }
   }
 
   Random random = Random();
   void revealNextLetter() {
-    if (score.value <= currentWord.word.length) {
-      List<String> letters = revealedLetters.value.split('');
+    List<String> letters = revealedLetters.value.split('');
 
-      // Reveal all instances of the next hidden letter
-      String letterToReveal =
-          currentWord.word[randomHiddenWordIndex[score.value - 1]];
+    int randomElement =
+        randomHiddenWordIndex[random.nextInt(randomHiddenWordIndex.length)];
 
-      for (int i = 0; i < currentWord.word.length; i++) {
-        if (currentWord.word[i].toLowerCase() == letterToReveal.toLowerCase()) {
-          letters[i] = currentWord.word[i];
-        }
-      }
+    String letterToReveal = currentWord.word[randomElement];
 
-      if (score.value == 10) {
-        revealedLetters.value = currentWord.word; // reveal full word
-        endGame(true);
-        return;
-      } else {
-        revealedLetters.value = letters.join('');
-
-        if (revealedLetters.value == currentWord.word) {
-          // if hidden word is fully revealed call the endGame
-          endGame(true);
-          return;
-        }
+    for (int i = 0; i < currentWord.word.length; i++) {
+      if (currentWord.word[i].toLowerCase() == letterToReveal.toLowerCase()) {
+        letters[i] = currentWord.word[i];
+        randomHiddenWordIndex.removeWhere((element) => element == i);
       }
     }
+
+    revealedLetters.value = letters.join('');
+
+    if (revealedLetters.value == currentWord.word) {
+      // if hidden word is fully revealed call the endGame
+
+      revealedLetters.value = currentWord.word;
+      score.value = 10;
+      scoreSet[level.value - 1]['score'] = starScore(score.value);
+
+      // scoreSet[level.value - 1] = {
+      //   ...scoreSet[level.value - 1], // Keep existing values
+      //   'score': starScore(score.value),
+      // };
+      endGame(true);
+      return;
+    }
+
+    // if (score.value == 5) {
+    //   revealedLetters.value = currentWord.word; // reveal full word
+    // } else {
+    //   revealedLetters.value = letters.join('');
+
+    //   if (revealedLetters.value == currentWord.word) {
+    //     // if hidden word is fully revealed call the endGame
+    //     endGame(true);
+    //   }
+    // }
   }
 
   void useHint() {
     if (availableHint.value == 1) {
+      playSound('audio/hint_sound.wav');
       List<String> letters = revealedLetters.value.split('');
 
       for (int i = 0; i < currentWord.word.length; i++) {
-        if (revealedLetters.value[i] == '-') {
+        if (revealedLetters.value[i] == ' ') {
           letters[i] = currentWord.word[i];
+          randomHiddenWordIndex.removeWhere((element) => element == i);
           break;
         }
       }
@@ -254,6 +344,7 @@ class AdditionController extends GetxController {
 
       if (revealedLetters.value == currentWord.word) {
         // if hidden word is fully revealed call the endGame
+
         endGame(true);
         return;
       }
@@ -267,15 +358,23 @@ class AdditionController extends GetxController {
         ? Get.dialog(
             barrierDismissible: false,
             AlertDialog(
-              backgroundColor: Color(0xFFb6d5f0),
+              backgroundColor: Color(0xFFf5d542),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15), // Rounded corners
                 side: const BorderSide(
-                  color: Colors.white, // Border color
+                  color: Color(0xFF492100),
+
                   width: 8, // Border width
                 ),
               ),
-              title: Center(child: Text("Level ${level.value} Completed!")),
+              title: Center(
+                  child: Text(
+                "Level ${level.value} Completed!",
+                style: TextStyle(
+                    fontSize: 22,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold),
+              )),
               content: Stack(
                 children: [
                   Lottie.asset(
@@ -293,7 +392,7 @@ class AdditionController extends GetxController {
                           (final index) => Icon(
                             Icons.star,
                             size: 20,
-                            color: index < score.value
+                            color: index < score.value ~/ 2
                                 ? Colors.yellow
                                 : Colors.grey, // Highlight stars
                           ),
@@ -307,24 +406,25 @@ class AdditionController extends GetxController {
                             alignment: WrapAlignment.center,
                             runSpacing: 8,
                             spacing: 8, // Spacing between boxes
-                            children:
-                                List.generate(currentWord.word.length, (index) {
+                            children: List.generate(
+                                revealedLetters.value.length, (index) {
                               return Container(
                                 width: 40,
                                 height: 40,
                                 alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: Colors.white, // Border color
-                                      width: 2.0, // Border thickness
-                                    ),
-                                  ),
-                                ),
+                                // decoration: BoxDecoration(
+                                //   border: Border(
+                                //     bottom: BorderSide(
+                                //       color: Colors.white, // Border color
+                                //       width: 2.0, // Border thickness
+                                //     ),
+                                //   ),
+                                // ),
                                 child: Text(
                                   revealedLetters.value[index],
                                   style: TextStyle(
-                                      fontSize: 24,
+                                      color: Color(0xFF492100),
+                                      fontSize: 22,
                                       fontWeight: FontWeight.bold),
                                 ),
                               );
@@ -332,8 +432,10 @@ class AdditionController extends GetxController {
                           )),
                       Container(
                           margin: EdgeInsets.all(20),
-                          color: Color(0xFFb6d5f0),
                           padding: EdgeInsets.all(10),
+                          // decoration: BoxDecoration(
+                          //     color: Color(0xFFb6d5f0),
+                          //     borderRadius: BorderRadius.circular(10)),
                           child: Text(
                             currentWord.meaning,
                             style: TextStyle(
@@ -348,50 +450,54 @@ class AdditionController extends GetxController {
                   spacing: 20,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade300,
+                    // OutlinedButton(
+                    //   style: OutlinedButton.styleFrom(
+                    //     backgroundColor: Colors.red.shade300,
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(
+                    //           10), // Set border radius to 10
+                    //     ),
+                    //     padding:
+                    //         EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    //     textStyle: TextStyle(fontSize: 20, color: Colors.white),
+                    //   ),
+                    //   onPressed: () {
+                    //     Get.back();
+                    //     restartGame();
+                    //   },
+                    //   child:
+                    //       Text("Retry", style: TextStyle(color: Colors.black)),
+                    // ),
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              10), // Set border radius to 10
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                         textStyle: TextStyle(fontSize: 20, color: Colors.white),
                       ),
                       onPressed: () {
-                        Get.back();
-                        restartGame();
+                        if (level.value == 10) {
+                          Get.back();
+                          playSound('audio/level_completed_sound.wav');
+
+                          congrats();
+                        } else {
+                          if (audioPlayerMusic.state == PlayerState.playing) {
+                            audioPlayerMusic.stop();
+                          }
+                          nextLevel();
+                          Get.back();
+                          Get.back();
+                        }
                       },
-                      child:
-                          Text("Retry", style: TextStyle(color: Colors.black)),
+                      child: Text(
+                        'Continue',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
-                    Obx(() => ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 20),
-                            textStyle:
-                                TextStyle(fontSize: 20, color: Colors.white),
-                          ),
-                          onPressed: () {
-                            if (level.value == 5) {
-                              Get.back();
-                              congrats();
-                            } else {
-                              nextLevel();
-                              Get.back();
-                              Get.back();
-                            }
-                          },
-                          child: Text(
-                            level.value == 5 ? "Continue" : "Next Level",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        )),
                   ],
                 ),
               ],
@@ -400,11 +506,11 @@ class AdditionController extends GetxController {
         : Get.dialog(
             barrierDismissible: false,
             AlertDialog(
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.redAccent,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15), // Rounded corners
                 side: const BorderSide(
-                  color: Colors.white, // Border color
+                  color: Colors.red,
                   width: 8, // Border width
                 ),
               ),
@@ -429,7 +535,33 @@ class AdditionController extends GetxController {
                             ),
                           ),
                         )
-                      : Text(timeLeft.value.toString()),
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Lottie.asset(
+                              'assets/lottie/timer.json',
+                              width: 80,
+                              fit: BoxFit.contain,
+                              repeat: timeLeft.value != 0 ? true : false,
+                            ),
+                            // Text(
+                            //   formattedTime,
+                            //   style: const TextStyle(
+                            //     color: Colors.black,
+                            //     fontSize: 20,
+                            //     fontWeight: FontWeight.bold,
+                            //   ),
+                            // ),
+                            // Text(
+                            //   '⏳ ${controller.formattedTime}',
+                            //   style: const TextStyle(
+                            //     color: Color(0xFFb6d5f0),
+                            //     fontSize: 20,
+                            //     fontWeight: FontWeight.bold,
+                            //   ),
+                            // ),
+                          ],
+                        ),
                   Lottie.asset(
                     'assets/lottie/game_over.json',
                     width: 150,
@@ -438,67 +570,48 @@ class AdditionController extends GetxController {
                 ],
               ),
               actions: [
-                Row(
-                  spacing: 20,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                        textStyle: TextStyle(fontSize: 20, color: Colors.white),
+                Center(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      onPressed: () {
-                        Get.back();
-                        timeLeft.value = totalTime;
-                        restartGame();
-                      },
-                      child: Text(
-                        'Retry',
-                        style: TextStyle(color: Colors.black),
-                      ),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                      textStyle: TextStyle(fontSize: 20, color: Colors.white),
                     ),
-                  ],
+                    onPressed: () {
+                      Get.back();
+                      timeLeft.value = totalTime;
+                      restartGame();
+                    },
+                    child: Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
               ],
             ),
           );
 
-    // Get.defaultDialog(
-    //     barrierDismissible: false,
-    //     title: lives.value == 0 ? "Out of lives" : 'Ran out of time',
-    //     content: Column(
-    //       children: [
-    //         Lottie.asset(
-    //           'assets/lottie/game_over.json',
-    //           width: 150,
-    //           fit: BoxFit.cover,
-    //         ),
-    //       ],
-    //     ),
-    //     textConfirm: "Restart",
-    //     onConfirm: () {
-    //       Get.back();
-    //       restartGame();
-    //     },
-    //   );
+    if (completed) {
+      playSound('audio/success_sound.wav');
+    } else {
+      playSound('audio/fail_sound.wav');
+    }
   }
 
   void congrats() {
     Get.dialog(
       barrierDismissible: false,
       AlertDialog(
-        backgroundColor: Color(0xFFb6d5f0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15), // Rounded corners
-          side: const BorderSide(
-            color: Colors.white, // Border color
-            width: 8, // Border width
-          ),
+          // side: const BorderSide(
+          //   color: Colors.white, // Border color
+          //   width: 8, // Border width
+          // ),
         ),
         title: Center(
             child: Text(
@@ -520,7 +633,7 @@ class AdditionController extends GetxController {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     "Congratulations on completing the quiz task! Your hard work and dedication truly paid off!",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,
                   ),
                 )
@@ -533,13 +646,13 @@ class AdditionController extends GetxController {
             spacing: 20,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
                   backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                   textStyle: TextStyle(fontSize: 20, color: Colors.white),
                 ),
                 onPressed: () {
@@ -601,22 +714,29 @@ class AdditionController extends GetxController {
 
     isCorrect.clear();
     indices.clear();
+    randomHiddenWordIndex.clear();
 
     _randomTheIndexOfWordList();
     currentWord = wordList[indices[currentWordListIndex.value]];
-    revealedLetters.value = "-" * currentWord.word.length;
-    _randomHiddenWordIndex(currentWord.word.length);
+    revealedLetters.value = " " * currentWord.word.length;
+    //_randomHiddenWordIndex();
+
     _generateEquations();
     _loadQuestion();
     startTimer();
+    for (int i = 0; i < currentWord.word.length; i++) {
+      if (revealedLetters.value[i] == ' ') {
+        randomHiddenWordIndex.add(i);
+      }
+    }
   }
 
-  void nextLevel() {
+  void nextLevel() async {
     try {
-      if (level.value != 5) {
+      if (level.value != 10) {
         currentWordListIndex.value++;
         level.value++;
-        randomNumber.value += 10;
+        randomNumber.value += 5;
       }
 
       saveTheSuccessLevel.add(level.value);
@@ -630,14 +750,21 @@ class AdditionController extends GetxController {
       score.value = 0;
       timeLeft.value = totalTime;
       currentQuestionIndex.value = 0;
-      revealedLetters.value = "-" * currentWord.word.length;
+      revealedLetters.value = " " * currentWord.word.length;
       isCorrect.clear();
+      randomHiddenWordIndex.clear();
 
       availableHint.value = 1;
-      _randomHiddenWordIndex(currentWord.word.length);
+      //_randomHiddenWordIndex();
       _generateEquations();
       _loadQuestion();
       lives.value = totalLives;
+
+      for (int i = 0; i < currentWord.word.length; i++) {
+        if (revealedLetters.value[i] == ' ') {
+          randomHiddenWordIndex.add(i);
+        }
+      }
       //startTimer();
     } catch (e) {
       debugPrint('Error: $e');

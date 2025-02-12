@@ -13,9 +13,8 @@ class SplashView extends GetView<SplashController> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background Image
           Image.asset(
-            "assets/images/splash_bg.png", // Replace with your image path
+            "assets/images/splash_bg.png",
             fit: BoxFit.cover,
           ),
 
@@ -28,7 +27,7 @@ class SplashView extends GetView<SplashController> {
                     value: controller.progressValue.value,
                     minHeight: 10,
                     borderRadius: BorderRadius.circular(10),
-                    backgroundColor: Colors.white.withOpacity(0.5),
+                    backgroundColor: Colors.white.withValues(alpha: 0.5),
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                   ),
                 )),

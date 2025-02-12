@@ -1,24 +1,24 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:math_adventure/app/data/model/constants/global_variable.dart';
 import 'package:math_adventure/app/data/model/word_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AdditionController extends GetxController {
   final int totalLives = 3;
   final int totalEquations = 10;
-  final int totalTime = 10;
+  final int totalTime = 180;
 
   final RxInt level = 1.obs;
   final RxInt lives = 3.obs;
   final RxInt score = 0.obs;
 
   final RxString revealedLetters = ''.obs;
-  final RxInt timeLeft = 10.obs;
+  final RxInt timeLeft = 180.obs;
   final RxInt currentQuestionIndex = 0.obs;
   final RxString currentEquation = ''.obs;
   final RxInt correctAnswer = 0.obs;
@@ -121,16 +121,19 @@ class AdditionController extends GetxController {
   }
 
   void playMusic() async {
-    if (isMusicIsOn.value && currentRoute.value == "/QuizAdditionView") {
-      print('HEY');
-      // Play audio when turned ON
-      await audioPlayerMusic.play(
-        AssetSource('audio/music_add.mp3'),
-      );
-      await audioPlayerMusic.setReleaseMode(ReleaseMode.loop);
-    } else {
-      audioPlayerMusic.stop();
-      print('Music Off ${isMusicIsOn.value} ${currentRoute.value}');
+    try {
+      if (isMusicIsOn.value && currentRoute.value == "/QuizAdditionView") {
+        // Play audio when turned ON
+        await audioPlayerMusic.play(
+          AssetSource('audio/music_add.mp3'),
+        );
+        await audioPlayerMusic.setReleaseMode(ReleaseMode.loop);
+      } else {
+        audioPlayerMusic.stop();
+        debugPrint('Music Off ${isMusicIsOn.value} ${currentRoute.value}');
+      }
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
@@ -145,8 +148,6 @@ class AdditionController extends GetxController {
       debugPrint(e.toString());
     }
   }
-
-  String sample = 'Greater Than';
 
   void initializeRandomEquation() {
     saveTheSuccessLevel.add(level.value);
@@ -165,7 +166,7 @@ class AdditionController extends GetxController {
       }
     }
 
-    print('Random ${randomHiddenWordIndex}');
+    debugPrint('Random $randomHiddenWordIndex');
   }
 
   void _randomTheIndexOfWordList() {
@@ -293,17 +294,8 @@ class AdditionController extends GetxController {
   void revealNextLetter() {
     List<String> letters = revealedLetters.value.split('');
 
-    // Reveal all instances of the next hidden letter
-    // String letterToReveal =
-    //     currentWord.word[randomHiddenWordIndex[score.value - 1]];
-
-    //nt randomIndex = random.nextInt(randomHiddenWordIndex.length);
-    print('befuserHint ${randomHiddenWordIndex}');
-
     int randomElement =
         randomHiddenWordIndex[random.nextInt(randomHiddenWordIndex.length)];
-
-    //int randomValue = randomHiddenWordIndex[randomIndex];
 
     String letterToReveal = currentWord.word[randomElement];
 
@@ -366,7 +358,6 @@ class AdditionController extends GetxController {
         return;
       }
     }
-    print('userHint ${randomHiddenWordIndex}');
   }
 
   void endGame(bool completed) {
@@ -376,14 +367,14 @@ class AdditionController extends GetxController {
         ? Get.dialog(
             barrierDismissible: false,
             AlertDialog(
-              //backgroundColor: Color(0xFFb6d5f0).withOpacity(0.5),
+              backgroundColor: Color(0xFFf5d542),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15), // Rounded corners
-                // side: const BorderSide(
-                //   color: Color(0xFFb6d5f0),
+                side: const BorderSide(
+                  color: Color(0xFF492100),
 
-                //   width: 8, // Border width
-                // ),
+                  width: 8, // Border width
+                ),
               ),
               title: Center(
                   child: Text(
@@ -441,7 +432,7 @@ class AdditionController extends GetxController {
                                 child: Text(
                                   revealedLetters.value[index],
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: Color(0xFF492100),
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold),
                                 ),
@@ -451,9 +442,9 @@ class AdditionController extends GetxController {
                       Container(
                           margin: EdgeInsets.all(20),
                           padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Color(0xFFb6d5f0),
-                              borderRadius: BorderRadius.circular(10)),
+                          // decoration: BoxDecoration(
+                          //     color: Color(0xFFb6d5f0),
+                          //     borderRadius: BorderRadius.circular(10)),
                           child: Text(
                             currentWord.meaning,
                             style: TextStyle(
@@ -468,56 +459,54 @@ class AdditionController extends GetxController {
                   spacing: 20,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // OutlinedButton(
+                    //   style: OutlinedButton.styleFrom(
+                    //     backgroundColor: Colors.red.shade300,
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(
+                    //           10), // Set border radius to 10
+                    //     ),
+                    //     padding:
+                    //         EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    //     textStyle: TextStyle(fontSize: 20, color: Colors.white),
+                    //   ),
+                    //   onPressed: () {
+                    //     Get.back();
+                    //     restartGame();
+                    //   },
+                    //   child:
+                    //       Text("Retry", style: TextStyle(color: Colors.black)),
+                    // ),
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.red.shade300,
+                        backgroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              10), // Set border radius to 10
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         padding:
                             EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                         textStyle: TextStyle(fontSize: 20, color: Colors.white),
                       ),
                       onPressed: () {
-                        Get.back();
-                        restartGame();
-                      },
-                      child:
-                          Text("Retry", style: TextStyle(color: Colors.black)),
-                    ),
-                    Obx(() => OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 20),
-                            textStyle:
-                                TextStyle(fontSize: 20, color: Colors.white),
-                          ),
-                          onPressed: () {
-                            if (level.value == 10) {
-                              Get.back();
-                              playSound('audio/level_completed_sound.wav');
+                        if (level.value == 10) {
+                          Get.back();
+                          playSound('audio/level_completed_sound.wav');
 
-                              congrats();
-                            } else {
-                              if (audioPlayerMusic.state ==
-                                  PlayerState.playing) {
-                                audioPlayerMusic.stop();
-                              }
-                              nextLevel();
-                              Get.back();
-                              Get.back();
-                            }
-                          },
-                          child: Text(
-                            level.value == 10 ? "Continue" : "Next Level",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        )),
+                          congrats();
+                        } else {
+                          if (audioPlayerMusic.state == PlayerState.playing) {
+                            audioPlayerMusic.stop();
+                          }
+                          nextLevel();
+                          Get.back();
+                          Get.back();
+                        }
+                      },
+                      child: Text(
+                        'Continue',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -526,12 +515,13 @@ class AdditionController extends GetxController {
         : Get.dialog(
             barrierDismissible: false,
             AlertDialog(
+              backgroundColor: Colors.redAccent,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15), // Rounded corners
-                // side: const BorderSide(
-                //   color: Color(0xFFb6d5f0),
-                //   width: 8, // Border width
-                // ),
+                side: const BorderSide(
+                  color: Colors.red,
+                  width: 8, // Border width
+                ),
               ),
               title: Center(
                   child: lives.value == 0
@@ -589,22 +579,25 @@ class AdditionController extends GetxController {
                 ],
               ),
               actions: [
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                Center(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                      textStyle: TextStyle(fontSize: 20, color: Colors.white),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                    textStyle: TextStyle(fontSize: 20, color: Colors.white),
-                  ),
-                  onPressed: () {
-                    Get.back();
-                    timeLeft.value = totalTime;
-                    restartGame();
-                  },
-                  child: Text(
-                    'Retry',
-                    style: TextStyle(color: Colors.black),
+                    onPressed: () {
+                      Get.back();
+                      timeLeft.value = totalTime;
+                      restartGame();
+                    },
+                    child: Text(
+                      'Retry',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],

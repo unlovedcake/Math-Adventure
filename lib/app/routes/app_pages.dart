@@ -1,17 +1,23 @@
 import 'package:get/get.dart';
 
+import '../modules/about/bindings/about_binding.dart';
+import '../modules/about/views/about_view.dart';
 import '../modules/addition/bindings/addition_binding.dart';
 import '../modules/addition/views/addition_view.dart';
+import '../modules/division/bindings/division_binding.dart';
+import '../modules/division/views/division_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/instruction/bindings/instruction_binding.dart';
 import '../modules/instruction/views/instruction_view.dart';
 import '../modules/introducing_aero/bindings/introducing_aero_binding.dart';
 import '../modules/introducing_aero/views/introducing_aero_view.dart';
-import '../modules/map_level/bindings/map_level_binding.dart';
-import '../modules/map_level/views/map_level_view.dart';
+import '../modules/login/bindings/login_binding.dart';
+import '../modules/login/views/login_view.dart';
 import '../modules/minus/bindings/minus_binding.dart';
 import '../modules/minus/views/minus_view.dart';
+import '../modules/multiplication/bindings/multiplication_binding.dart';
+import '../modules/multiplication/views/multiplication_view.dart';
 import '../modules/onboarding/bindings/onboarding_binding.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
 import '../modules/select_operation/bindings/select_operation_binding.dart';
@@ -32,16 +38,23 @@ class AppPages {
 
   static const INTRODUCINGAERO = Routes.INTRODUCING_AERO;
 
+  static const LOGIN = Routes.LOGIN;
+
   static const INITIAL = Routes.HOME;
 
   static const SETTING = Routes.SETTING;
 
+  static const ABOUT = Routes.ABOUT;
+
   static const ADDITION = Routes.ADDITION;
+
+  static const MINUS = Routes.MINUS;
+  static const MULTIPLICATION = Routes.MULTIPLICATION;
+  static const DIVISION = Routes.DIVISION;
 
   static const INSTRUCTION = Routes.INSTRUCTION;
 
   static const SELECTOPERATION = Routes.SELECT_OPERATION;
-  static const MAPLEVEL = Routes.MAP_LEVEL;
 
   static final routes = [
     GetPage(
@@ -63,11 +76,6 @@ class AppPages {
       name: _Paths.SELECT_OPERATION,
       page: () => const SelectOperationView(),
       binding: SelectOperationBinding(),
-    ),
-    GetPage(
-      name: _Paths.MAP_LEVEL,
-      page: () => const MapLevelView(),
-      binding: MapLevelBinding(),
     ),
     GetPage(
       name: _Paths.SPLASH,
@@ -93,6 +101,26 @@ class AppPages {
       name: _Paths.MINUS,
       page: () => const MinusView(),
       binding: MinusBinding(),
+    ),
+    GetPage(
+      name: _Paths.MULTIPLICATION,
+      page: () => const MultiplicationView(),
+      binding: MultiplicationBinding(),
+    ),
+    GetPage(
+      name: _Paths.DIVISION,
+      page: () => const DivisionView(),
+      binding: DivisionBinding(),
+    ),
+    GetPage(
+      name: _Paths.LOGIN,
+      page: () => const LoginView(),
+      binding: LoginBinding(),
+    ),
+    GetPage(
+      name: _Paths.ABOUT,
+      page: () => const AboutView(),
+      binding: AboutBinding(),
     ),
   ];
 }

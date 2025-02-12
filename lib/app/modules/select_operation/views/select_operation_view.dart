@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-import 'package:math_adventure/app/routes/app_pages.dart';
 
 import '../controllers/select_operation_controller.dart';
 
@@ -18,10 +16,10 @@ class SelectOperationView extends GetView<SelectOperationController> {
           style: TextStyle(
               color: Colors.white, fontSize: 24, fontWeight: FontWeight.w500),
         ),
-        backgroundColor: Colors.transparent, // Transparent AppBar
-        elevation: 0, // No shadow
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: CircleAvatar(
-          backgroundColor: Color(0xFFb6d5f0).withOpacity(0.5),
+          backgroundColor: Color(0xFFb6d5f0).withValues(alpha: 0.5),
           radius: 20,
           child: IconButton(
             icon: const Icon(
@@ -119,7 +117,7 @@ class SelectOperationView extends GetView<SelectOperationController> {
         ),
         boxShadow: [
           BoxShadow(
-            color: gradientColors.last.withOpacity(0.5),
+            color: gradientColors.last.withValues(alpha: 0.5),
             blurRadius: 10,
             spreadRadius: 2,
             offset: const Offset(3, 3),

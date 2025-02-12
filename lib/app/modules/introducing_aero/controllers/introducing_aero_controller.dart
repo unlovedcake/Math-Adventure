@@ -1,3 +1,5 @@
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:math_adventure/app/routes/app_pages.dart';
 
@@ -9,7 +11,32 @@ class IntroducingAeroController extends GetxController {
     "To help Aero, you, a brilliant mathematician were recruited to assist him on his journey by solving math problems.",
   ].obs;
 
-  var currentIndex = 0.obs;
+  final currentIndex = 0.obs;
+
+  final AudioPlayer audioPlayerMusic = AudioPlayer();
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    playMusic();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    audioPlayerMusic.dispose();
+  }
+
+  void playMusic() async {
+    try {
+      await audioPlayerMusic.play(
+        AssetSource('audio/music_math_adventure.mp3'),
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
 
   void nextDescription() {
     if (currentIndex.value < descriptions.length - 1) {

@@ -1,4 +1,7 @@
 include: package:flutter_lints/flutter.yaml
 linter:
   rules:
-    
+    # Allow UpperCase variable
+    constant_identifier_names: false
+
+    avoid_print: true

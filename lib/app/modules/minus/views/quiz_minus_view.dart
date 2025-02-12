@@ -1,71 +1,21 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:math_adventure/app/modules/addition/controllers/addition_controller.dart';
+import 'package:math_adventure/app/modules/minus/controllers/minus_controller.dart';
+import 'package:math_adventure/app/routes/app_pages.dart';
 
-class QuizAdditionView extends GetView<AdditionController> {
-  const QuizAdditionView({super.key});
+class QuizMinusView extends StatelessWidget {
+  const QuizMinusView({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final AdditionController controller = Get.put(AdditionController());
+    final MinusController controller = Get.put(MinusController());
 
-    print('level.value ${controller.saveTheSuccessLevel}');
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Color(0xFF030f32),
-        // appBar: AppBar(
-        //     actions: [
-        //       IconButton(
-        //           onPressed: () {
-        //             controller.restartGame();
-        //           },
-        //           icon: Icon(Icons.refresh, color: Colors.white, size: 24))
-        //     ],
-        //     backgroundColor: Color(0xFF030f32),
-        //     title: Obx(() => Row(
-        //           children: [
-        //             CircleAvatar(
-        //               backgroundColor: Color(0xFFb6d5f0),
-        //               radius: 20,
-        //               child: IconButton(
-        //                 icon: const Icon(
-        //                   Icons.arrow_back,
-        //                   color: Colors.white,
-        //                 ),
-        //                 onPressed: () {
-        //                   controller.timer?.cancel();
-        //                   Get.back();
-        //                 },
-        //               ),
-        //             ),
-        //             CircleAvatar(
-        //               backgroundColor: Color(0xFFb6d5f0),
-        //               radius: 20,
-        //               child: IconButton(
-        //                 icon: const Icon(
-        //                   Icons.settings,
-        //                   color: Colors.white,
-        //                 ),
-        //                 onPressed: () {
-        //                   controller.timer?.cancel();
-        //                   Get.back();
-        //                 },
-        //               ),
-        //             ),
-        //             Container(
-        //               padding: EdgeInsets.all(8),
-        //               color: Color(0xFFb6d5f0),
-        //               child: Text(
-        //                 'LEVEL ${controller.level}',
-        //                 style: TextStyle(
-        //                   color: Color(0xFFb6d5f0),
-        //                 ),
-        //               ),
-        //             ),
-        //           ],
-        //         ))),
+        backgroundColor: Color(0xFF400000),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -86,6 +36,11 @@ class QuizAdditionView extends GetView<AdditionController> {
                                 color: Colors.black,
                               ),
                               onPressed: () {
+                                if (controller.audioPlayerMusic.state ==
+                                    PlayerState.playing) {
+                                  controller.audioPlayerMusic.stop();
+                                }
+
                                 controller.timer?.cancel();
                                 Get.back();
                               },
@@ -101,7 +56,12 @@ class QuizAdditionView extends GetView<AdditionController> {
                               ),
                               onPressed: () {
                                 controller.timer?.cancel();
-                                Get.back();
+                                if (controller.audioPlayerMusic.state ==
+                                    PlayerState.playing) {
+                                  controller.audioPlayerMusic.pause();
+                                }
+
+                                Get.toNamed(AppPages.SETTING);
                               },
                             ),
                           ),
@@ -231,7 +191,7 @@ class QuizAdditionView extends GetView<AdditionController> {
                     controller.currentEquation.value,
                     style: TextStyle(
                       color: Color(0xFFb6d5f0),
-                      fontSize: 34,
+                      fontSize: 40,
                       fontWeight: FontWeight.bold,
                     ),
                   )),
@@ -256,7 +216,7 @@ class QuizAdditionView extends GetView<AdditionController> {
                                 "$choice",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 32,
+                                  fontSize: 35,
                                   color: Color(0xFF030f32),
                                 ),
                               ),
@@ -304,7 +264,7 @@ class QuizAdditionView extends GetView<AdditionController> {
                                 (final index) => Icon(
                                   Icons.star,
                                   size: 30,
-                                  color: index < controller.score.value
+                                  color: index < controller.score.value ~/ 2
                                       ? Colors.yellow
                                       : Colors.grey, // Highlight stars
                                 ),

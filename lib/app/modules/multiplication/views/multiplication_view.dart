@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:math_adventure/app/data/model/constants/global_variable.dart';
-import 'package:math_adventure/app/modules/addition/controllers/addition_controller.dart';
-import 'package:math_adventure/app/modules/addition/views/quiz_addition_view.dart';
+import 'package:math_adventure/app/modules/multiplication/controllers/multiplication_controller.dart';
+import 'package:math_adventure/app/modules/multiplication/views/quiz_multiplication_view.dart';
 
-class AdditionView extends GetView<AdditionController> {
-  const AdditionView({super.key});
+class MultiplicationView extends GetView<MultiplicationController> {
+  const MultiplicationView({super.key});
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(AdditionController());
+    final controller = Get.put(MultiplicationController());
 
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/map_level.png'),
+          image: AssetImage('assets/images/map_multiplication.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -21,8 +21,8 @@ class AdditionView extends GetView<AdditionController> {
         extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+          backgroundColor: Colors.transparent, // Transparent AppBar
+          elevation: 0, // No shadow
           leading: Padding(
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
@@ -112,7 +112,6 @@ class AdditionView extends GetView<AdditionController> {
               ),
             ),
             Positioned(
-              right: 50,
               bottom: 230,
               child: Stack(
                 alignment: Alignment.bottomCenter,
@@ -152,7 +151,6 @@ class AdditionView extends GetView<AdditionController> {
               ),
             ),
             Positioned(
-              left: 90,
               bottom: 330,
               child: Stack(
                 alignment: Alignment.bottomCenter,
@@ -192,7 +190,7 @@ class AdditionView extends GetView<AdditionController> {
             ),
 
             Positioned(
-              bottom: 420,
+              bottom: 460,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 clipBehavior: Clip.none,
@@ -211,7 +209,7 @@ class AdditionView extends GetView<AdditionController> {
             ),
             Positioned(
               left: 160,
-              bottom: 460,
+              top: 160,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 clipBehavior: Clip.none,
@@ -229,8 +227,7 @@ class AdditionView extends GetView<AdditionController> {
               ),
             ),
             Positioned(
-              left: 60,
-              bottom: 470,
+              top: 100,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 clipBehavior: Clip.none,
@@ -336,7 +333,7 @@ class StarScoreWidget extends StatelessWidget {
   const StarScoreWidget(
       {super.key, required this.controller, required this.index});
 
-  final AdditionController controller;
+  final MultiplicationController controller;
   final int index;
 
   @override
@@ -361,7 +358,7 @@ class StarLevelWidget extends StatelessWidget {
       required this.index,
       required this.level});
 
-  final AdditionController controller;
+  final MultiplicationController controller;
   final int index;
   final int level;
 
@@ -401,7 +398,7 @@ class _ButtonLevel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<AdditionController>();
+    final controller = Get.find<MultiplicationController>();
 
     return Obx(
       () => IconButton(
@@ -412,11 +409,11 @@ class _ButtonLevel extends StatelessWidget {
               if (controller.saveTheSuccessLevel[x - 1] == level) {
                 controller.level.value = level;
                 controller.currentQuestionIndex.value = 0;
-                currentRoute.value = "/QuizAdditionView";
+                currentRoute.value = "/QuizMultiplicationView";
 
                 controller.playMusic();
                 Get.to(
-                  () => QuizAdditionView(),
+                  () => QuizMultiplicationView(),
                 );
                 controller.startTimer();
 

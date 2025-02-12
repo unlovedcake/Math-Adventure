@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 
 import '../controllers/introducing_aero_controller.dart';
@@ -38,14 +37,13 @@ class IntroducingAeroView extends GetView<IntroducingAeroController> {
                   ),
                   child: Container(
                     width: double.infinity,
-                    height: 200,
                     key: ValueKey(controller.currentIndex.value),
                     padding: EdgeInsets.all(16),
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Color(0xffc3bff4),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.white, width: 3),
+                      border: Border.all(color: Colors.black, width: 4),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -54,7 +52,7 @@ class IntroducingAeroView extends GetView<IntroducingAeroController> {
                           controller
                               .descriptions[controller.currentIndex.value],
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -65,10 +63,10 @@ class IntroducingAeroView extends GetView<IntroducingAeroController> {
                         // 🔹 Next Button at Bottom Right
                         Align(
                           alignment: Alignment.bottomRight,
-                          child: ElevatedButton(
+                          child: OutlinedButton(
                             onPressed: controller.nextDescription,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFb6d5f0),
+                              backgroundColor: Color(0xFFc3bff4),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),

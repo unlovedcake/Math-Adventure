@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:math_adventure/app/modules/addition/controllers/addition_controller.dart';
+import 'package:math_adventure/app/modules/division/controllers/division_controller.dart';
+import 'package:math_adventure/app/modules/minus/controllers/minus_controller.dart';
+import 'package:math_adventure/app/modules/multiplication/controllers/multiplication_controller.dart';
 
 import '../controllers/setting_controller.dart';
 
@@ -9,6 +11,7 @@ class SettingView extends GetView<SettingController> {
   const SettingView({super.key});
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(SettingController());
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -32,8 +35,19 @@ class SettingView extends GetView<SettingController> {
                 final addController = Get.put(AdditionController());
                 addController.startTimer();
                 addController.playMusic();
-
-                print('OIS');
+              } else if (Get.isRegistered<MinusController>()) {
+                final minusController = Get.put(MinusController());
+                minusController.startTimer();
+                minusController.playMusic();
+              } else if (Get.isRegistered<MultiplicationController>()) {
+                final multiplicationController =
+                    Get.put(MultiplicationController());
+                multiplicationController.startTimer();
+                multiplicationController.playMusic();
+              } else if (Get.isRegistered<DivisionController>()) {
+                //final addController = Get.put(DivisionController());
+                // addController.startTimer();
+                // addController.playMusic();
               }
               Get.back();
             },
@@ -56,7 +70,7 @@ class SettingView extends GetView<SettingController> {
               padding: EdgeInsets.all(16),
               margin: EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.6),
+                color: Colors.grey.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
@@ -140,8 +154,8 @@ class SettingView extends GetView<SettingController> {
                   SizedBox(height: 20),
 
                   // 🔹 Exit Button
-                  GestureDetector(
-                    onTap: () => Get.snackbar("Exit", "You clicked Exit"),
+                  InkWell(
+                    onTap: () => controller.showExitDialog(context),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
