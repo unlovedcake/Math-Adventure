@@ -175,12 +175,6 @@ class AdditionController extends GetxController {
     currentWord = wordList[indices[currentWordListIndex.value]];
   }
 
-  // void _randomHiddenWordIndex() {
-  //   randomHiddenWordIndex.value =
-  //       List.generate(currentWord.word.length, (index) => index);
-  //   randomHiddenWordIndex.shuffle(); // Shuffle the index of current word
-  // }
-
   void _generateEquations() {
     Random random = Random();
     equations.clear();
